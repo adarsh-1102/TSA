@@ -183,6 +183,38 @@
             margin-bottom: 10px;
         }
         
+        .cone-logo {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 10px;
+        }
+        
+        .cone-logo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 40px solid transparent;
+            border-right: 40px solid transparent;
+            border-bottom: 70px solid var(--secondary-color);
+        }
+        
+        .cone-logo::after {
+            content: '';
+            position: absolute;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 5px;
+            background-color: var(--secondary-color);
+            border-radius: 50%;
+        }
+        
         .shape-name {
             font-weight: 600;
             font-size: 1.2rem;
@@ -518,6 +550,39 @@
             outline: none;
             border-color: var(--secondary-color);
         }
+        
+        /* Custom cone logo */
+        .fa-cone-custom {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+        }
+        
+        .fa-cone-custom::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-bottom: 35px solid currentColor;
+        }
+        
+        .fa-cone-custom::after {
+            content: '';
+            position: absolute;
+            top: 35px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 3px;
+            background-color: currentColor;
+            border-radius: 50%;
+        }
     </style>
 </head>
 <body>
@@ -529,7 +594,7 @@
                 </div>
                 <h1>Geometry Calculator Pro</h1>
             </div>
-            <p class="subtitle">A professional tool for calculating Total Surface Area (TSA), Curved Surface Area (CSA), and Volume of three-dimensional shapes with precision and accuracy.</p>
+            <p class="subtitle">A professional tool for calculating Total Surface Area (TSA), Lateral Surface Area (LSA), and Volume of three-dimensional shapes with precision and accuracy.</p>
         </header>
         
         <div class="app-container">
@@ -553,7 +618,7 @@
                         <span>Cylinder</span>
                     </div>
                     <div class="shape-btn" data-shape="cone">
-                        <i class="fas fa-cone"></i>
+                        <div class="fa-cone-custom"></div>
                         <span>Cone</span>
                     </div>
                     <div class="shape-btn" data-shape="sphere">
@@ -614,7 +679,7 @@
                         <i class="fas fa-square-root-alt"></i> Formulas for <span id="current-shape">Cube</span>
                     </div>
                     <div class="formula-content" id="formula-display">
-                        TSA = 6a² | CSA = 4a² | Volume = a³
+                        TSA = 6a² | LSA = 4a² | Volume = a³
                     </div>
                 </div>
             </div>
@@ -646,12 +711,12 @@
                                 <div class="result-icon">
                                     <i class="fas fa-border-style"></i>
                                 </div>
-                                Curved Surface Area (CSA)
+                                <span id="lsa-csa-title">Lateral Surface Area (LSA)</span>
                             </div>
                         </div>
-                        <div class="result-value" id="csa-result">0</div>
+                        <div class="result-value" id="lsa-csa-result">0</div>
                         <div class="result-unit">square units</div>
-                        <div class="result-formula" id="csa-formula">CSA = 4a²</div>
+                        <div class="result-formula" id="lsa-csa-formula">LSA = 4a²</div>
                     </div>
                     
                     <div class="result-card">
@@ -705,11 +770,12 @@
             
             // Result elements
             const tsaResult = document.getElementById('tsa-result');
-            const csaResult = document.getElementById('csa-result');
+            const lsaCsaResult = document.getElementById('lsa-csa-result');
             const volumeResult = document.getElementById('volume-result');
             const tsaFormula = document.getElementById('tsa-formula');
-            const csaFormula = document.getElementById('csa-formula');
+            const lsaCsaFormula = document.getElementById('lsa-csa-formula');
             const volumeFormula = document.getElementById('volume-formula');
+            const lsaCsaTitle = document.getElementById('lsa-csa-title');
             
             // Shape data with formulas, input requirements, and formula display
             const shapeData = {
@@ -721,15 +787,16 @@
                     ],
                     formulas: {
                         tsa: (values) => 6 * Math.pow(values.side, 2),
-                        csa: (values) => 4 * Math.pow(values.side, 2),
+                        lsa: (values) => 4 * Math.pow(values.side, 2),
                         volume: (values) => Math.pow(values.side, 3)
                     },
-                    formulaText: "TSA = 6a² | CSA = 4a² | Volume = a³",
+                    formulaText: "TSA = 6a² | LSA = 4a² | Volume = a³",
                     resultFormulas: {
                         tsa: "TSA = 6a²",
-                        csa: "CSA = 4a²",
+                        lsa: "LSA = 4a²",
                         volume: "Volume = a³"
-                    }
+                    },
+                    lsaLabel: "Lateral Surface Area (LSA)"
                 },
                 cuboid: {
                     name: "Cuboid",
@@ -741,15 +808,16 @@
                     ],
                     formulas: {
                         tsa: (values) => 2 * (values.length * values.width + values.width * values.height + values.height * values.length),
-                        csa: (values) => 2 * values.height * (values.length + values.width),
+                        lsa: (values) => 2 * values.height * (values.length + values.width),
                         volume: (values) => values.length * values.width * values.height
                     },
-                    formulaText: "TSA = 2(lw + wh + hl) | CSA = 2h(l + w) | Volume = l × w × h",
+                    formulaText: "TSA = 2(lw + wh + hl) | LSA = 2h(l + w) | Volume = l × w × h",
                     resultFormulas: {
                         tsa: "TSA = 2(lw + wh + hl)",
-                        csa: "CSA = 2h(l + w)",
+                        lsa: "LSA = 2h(l + w)",
                         volume: "Volume = l × w × h"
-                    }
+                    },
+                    lsaLabel: "Lateral Surface Area (LSA)"
                 },
                 cylinder: {
                     name: "Cylinder",
@@ -768,11 +836,12 @@
                         tsa: "TSA = 2πr(r + h)",
                         csa: "CSA = 2πrh",
                         volume: "Volume = πr²h"
-                    }
+                    },
+                    lsaLabel: "Curved Surface Area (CSA)"
                 },
                 cone: {
                     name: "Cone",
-                    icon: "fas fa-cone",
+                    icon: "fas fa-cone-custom",
                     inputs: [
                         {id: "radius", label: "Radius (r)", placeholder: "Enter radius", icon: "fas fa-circle"},
                         {id: "height", label: "Height (h)", placeholder: "Enter height", icon: "fas fa-arrows-alt-v"},
@@ -788,7 +857,8 @@
                         tsa: "TSA = πr(r + l)",
                         csa: "CSA = πrl",
                         volume: "Volume = (1/3)πr²h"
-                    }
+                    },
+                    lsaLabel: "Curved Surface Area (CSA)"
                 },
                 sphere: {
                     name: "Sphere",
@@ -806,7 +876,8 @@
                         tsa: "TSA = 4πr²",
                         csa: "CSA = 4πr²",
                         volume: "Volume = (4/3)πr³"
-                    }
+                    },
+                    lsaLabel: "Curved Surface Area (CSA)"
                 },
                 hemisphere: {
                     name: "Hemisphere",
@@ -824,7 +895,8 @@
                         tsa: "TSA = 3πr²",
                         csa: "CSA = 2πr²",
                         volume: "Volume = (2/3)πr³"
-                    }
+                    },
+                    lsaLabel: "Curved Surface Area (CSA)"
                 }
             };
             
@@ -856,10 +928,22 @@
                 currentShapeElement.textContent = shapeInfo.name;
                 shapeName.textContent = shapeInfo.name;
                 
+                // Update LSA/CSA label
+                lsaCsaTitle.textContent = shapeInfo.lsaLabel;
+                
                 // Update result formulas
                 tsaFormula.textContent = shapeInfo.resultFormulas.tsa;
-                csaFormula.textContent = shapeInfo.resultFormulas.csa;
+                lsaCsaFormula.textContent = shapeInfo.resultFormulas.lsa || shapeInfo.resultFormulas.csa;
                 volumeFormula.textContent = shapeInfo.resultFormulas.volume;
+                
+                // Update shape icon
+                if (shape === 'cone') {
+                    shapeIcon.className = '';
+                    shapeIcon.innerHTML = `<div class="cone-logo"></div>`;
+                } else {
+                    shapeIcon.className = shapeInfo.icon;
+                    shapeIcon.innerHTML = '';
+                }
             }
             
             // Function to handle shape selection
@@ -872,9 +956,6 @@
                         btn.classList.remove('active');
                     }
                 });
-                
-                // Update shape icon
-                shapeIcon.className = shapeData[shape].icon;
                 
                 // Update input fields
                 updateInputFields(shape);
@@ -906,7 +987,7 @@
             // Function to clear results
             function clearResults() {
                 tsaResult.textContent = '0';
-                csaResult.textContent = '0';
+                lsaCsaResult.textContent = '0';
                 volumeResult.textContent = '0';
             }
             
@@ -953,12 +1034,12 @@
                 
                 // Calculate results
                 const tsa = shapeInfo.formulas.tsa(values);
-                const csa = shapeInfo.formulas.csa(values);
+                const lsaCsa = shapeInfo.formulas.lsa ? shapeInfo.formulas.lsa(values) : shapeInfo.formulas.csa(values);
                 const volume = shapeInfo.formulas.volume(values);
                 
                 // Update result display with selected precision
                 tsaResult.innerHTML = `${tsa.toFixed(precision)}`;
-                csaResult.innerHTML = `${csa.toFixed(precision)}`;
+                lsaCsaResult.innerHTML = `${lsaCsa.toFixed(precision)}`;
                 volumeResult.innerHTML = `${volume.toFixed(precision)}`;
                 
                 // Show success notification
@@ -1010,4 +1091,4 @@
         });
     </script>
 </body>
-</html>ind
+</html>
